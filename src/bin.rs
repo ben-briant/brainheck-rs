@@ -4,7 +4,7 @@ use std::io::Read;
 use token::Token;
 
 fn main() {
-    let lines = read_to_string("./examples/fib")
+    let lines = read_to_string("./examples/head")
         .unwrap_or_else(|_| panic!("Unable to read file"))
         .chars()
         .filter(|c| !c.is_ascii_whitespace())
@@ -56,10 +56,11 @@ fn run_commands(tokens: Vec<Token>, loop_map: HashMap<usize, usize>) {
                 mem_pointer -= 1;
             }
             Token::Inc => {
-                memory[mem_pointer] += 1;
+                // TODO: Use Wrapping type instead?
+                memory[mem_pointer] = u8::wrapping_add(memory[mem_pointer], 1);
             }
             Token::Dec => {
-                memory[mem_pointer] -= 1;
+                memory[mem_pointer] = u8::wrapping_sub(memory[mem_pointer], 1);
             }
             Token::Output => {
                 print!(
@@ -71,7 +72,7 @@ fn run_commands(tokens: Vec<Token>, loop_map: HashMap<usize, usize>) {
             }
             Token::Input => {
                 std::io::stdin()
-                    .read(&mut memory[instruction..instruction + 1])
+                    .read(&mut memory[mem_pointer..mem_pointer + 1])
                     .unwrap();
             }
             Token::LoopStart => {
